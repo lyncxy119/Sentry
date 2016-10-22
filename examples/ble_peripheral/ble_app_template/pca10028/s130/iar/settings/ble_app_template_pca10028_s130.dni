@@ -17,7 +17,7 @@ TraceBufferSize=0x00010000
 TraceStallIfFIFOFull=0x00000000
 TracePortSize=0x00000000
 [DebugChecksum]
-Checksum=-1408735716
+Checksum=1678929509
 [SWOTraceHWSettings]
 OverrideDefaultClocks=0
 CpuClock=72000000

@@ -101,11 +101,7 @@ static ble_hrs_t m_sentry;                                   /**< Structure used
 /*add my service 
 */
 
-typedef struct BLEService{  
-    uint16_t conn_handle;              // 连接后用 来记录下句柄，供续使连接后用  
-    uint16_t service_handle;           // 保存服务的句柄  
-    ble_gatts_char_handles_t handle;   // 保存特性句柄  
-}BLEService;  
+
 BLEService Sentry;
 /* YOUR_JOB: Declare all services structure your application is using
    static ble_xx_service_t                     m_xxs;
@@ -179,6 +175,7 @@ void service_init(void)
  
     char_md2.char_props.notify = 1;
     char_md2.char_props.write    = 1;  
+    char_md2.char_props.read    = 1;
     char_md2.p_char_pf           = NULL;  
     char_md2.p_char_user_desc    = NULL;  
     char_md2.p_cccd_md      = NULL;  
@@ -672,6 +669,7 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
      * Remember to call ble_conn_state_on_ble_evt before calling any ble_conns_state_* functions. */
     ble_conn_state_on_ble_evt(p_ble_evt);
     pm_on_ble_evt(p_ble_evt);
+    ble_hrs_on_ble_evt(&Sentry, p_ble_evt);
     ble_conn_params_on_ble_evt(p_ble_evt);
     bsp_btn_ble_on_ble_evt(p_ble_evt);
     on_ble_evt(p_ble_evt);

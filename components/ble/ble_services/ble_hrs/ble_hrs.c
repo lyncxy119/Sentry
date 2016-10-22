@@ -22,8 +22,8 @@
 #include "ble_l2cap.h"
 #include "ble_srv_common.h"
 #include "app_util.h"
-
-
+#include "nrf_gpio.h"
+#include "boards.h"
 #define OPCODE_LENGTH 1                                                    /**< Length of opcode inside Heart Rate Measurement packet. */
 #define HANDLE_LENGTH 2                                                    /**< Length of handle inside Heart Rate Measurement packet. */
 #define MAX_HRM_LEN   (BLE_L2CAP_MTU_DEF - OPCODE_LENGTH - HANDLE_LENGTH)  /**< Maximum size of a transmitted Heart Rate Measurement. */
@@ -37,13 +37,13 @@
 #define HRM_FLAG_MASK_EXPENDED_ENERGY_INCLUDED (0x01 << 3)                 /**< Energy Expended Status bit. Feature Not Supported */
 #define HRM_FLAG_MASK_RR_INTERVAL_INCLUDED     (0x01 << 4)                 /**< RR-Interval bit. */
 
-
+extern BLEService Sentry;
 /**@brief Function for handling the Connect event.
  *
  * @param[in]   p_hrs       Heart Rate Service structure.
  * @param[in]   p_ble_evt   Event received from the BLE stack.
  */
-static void on_connect(ble_hrs_t * p_hrs, ble_evt_t * p_ble_evt)
+static void on_connect(BLEService * p_hrs, ble_evt_t * p_ble_evt)
 {
     p_hrs->conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
 }
@@ -95,18 +95,25 @@ static void on_hrm_cccd_write(ble_hrs_t * p_hrs, ble_gatts_evt_write_t * p_evt_w
  * @param[in]   p_hrs       Heart Rate Service structure.
  * @param[in]   p_ble_evt   Event received from the BLE stack.
  */
-static void on_write(ble_hrs_t * p_hrs, ble_evt_t * p_ble_evt)
+static void on_write(BLEService * p_hrs, ble_evt_t * p_ble_evt)
 {
     ble_gatts_evt_write_t * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
-
-    if (p_evt_write->handle == p_hrs->hrm_handles.cccd_handle)
+   if(p_evt_write->uuid.uuid==0xFFF3)
+   // if(p_evt_write->data[0] == 0xAA)
     {
-        on_hrm_cccd_write(p_hrs, p_evt_write);
+       nrf_gpio_cfg_output(21);
+    LEDS_OFF(1<<21);
+    }
+  if(p_evt_write->uuid.uuid==0xFFF2)
+   // if(p_evt_write->data[0] == 0xAA)
+    {
+       nrf_gpio_cfg_output(21);
+    LEDS_ON(1<<21);
     }
 }
 
 
-void ble_hrs_on_ble_evt(ble_hrs_t * p_hrs, ble_evt_t * p_ble_evt)
+void ble_hrs_on_ble_evt(BLEService * p_hrs, ble_evt_t * p_ble_evt)
 {
     switch (p_ble_evt->header.evt_id)
     {
@@ -115,11 +122,12 @@ void ble_hrs_on_ble_evt(ble_hrs_t * p_hrs, ble_evt_t * p_ble_evt)
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
-            on_disconnect(p_hrs, p_ble_evt);
+          // on_disconnect(p_hrs, p_ble_evt);
             break;
 
         case BLE_GATTS_EVT_WRITE:
-            on_write(p_hrs, p_ble_evt);
+         // ble_gatts_evt_write_t * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
+            on_write(p_hrs,p_ble_evt);
             break;
 
         default:

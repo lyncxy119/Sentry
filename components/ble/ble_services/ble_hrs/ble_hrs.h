@@ -64,6 +64,14 @@ extern "C" {
 
 #define BLE_HRS_MAX_BUFFERED_RR_INTERVALS       20      /**< Size of RR Interval buffer inside service. */
 
+  
+  typedef struct BLEService{  
+    
+    uint16_t conn_handle;              // 连接后用 来记录下句柄，供续使连接后用  
+    uint16_t service_handle;           // 保存服务的句柄  
+    ble_gatts_char_handles_t handle;   // 保存特性句柄  
+}BLEService;  
+
 /**@brief Heart Rate Service event type. */
 typedef enum
 {
@@ -128,7 +136,7 @@ uint32_t ble_hrs_init(ble_hrs_t * p_hrs, const ble_hrs_init_t * p_hrs_init);
  * @param[in]   p_hrs      Heart Rate Service structure.
  * @param[in]   p_ble_evt  Event received from the BLE stack.
  */
-void ble_hrs_on_ble_evt(ble_hrs_t * p_hrs, ble_evt_t * p_ble_evt);
+void ble_hrs_on_ble_evt(BLEService * p_hrs, ble_evt_t * p_ble_evt);
 
 /**@brief Function for sending heart rate measurement if notification has been enabled.
  *
