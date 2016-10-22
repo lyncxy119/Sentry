@@ -27,7 +27,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-
+#include "ble_hrs.h"
 #include "nordic_common.h"
 #include "nrf.h"
 #include "app_error.h"
@@ -68,7 +68,7 @@
 #define CENTRAL_LINK_COUNT              0                                           /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
 #define PERIPHERAL_LINK_COUNT           1                                           /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
 
-#define DEVICE_NAME                     "Yes We Can"                           /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "Modoo0100008"                           /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                       /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                         /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout in units of seconds. */
@@ -97,16 +97,130 @@
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                            /**< Handle of the current connection. */
+static ble_hrs_t m_sentry;                                   /**< Structure used to identify the heart rate service. */ 
+/*add my service 
+*/
 
+typedef struct BLEService{  
+    uint16_t conn_handle;              // 连接后用 来记录下句柄，供续使连接后用  
+    uint16_t service_handle;           // 保存服务的句柄  
+    ble_gatts_char_handles_t handle;   // 保存特性句柄  
+}BLEService;  
+BLEService Sentry;
 /* YOUR_JOB: Declare all services structure your application is using
    static ble_xx_service_t                     m_xxs;
    static ble_yy_service_t                     m_yys;
  */
-
 // YOUR_JOB: Use UUIDs for service(s) used in your application.
 static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}}; /**< Universally unique service identifiers. */
 
 static void advertising_start(void);
+/**@brief Function to initialize service.
+ *
+ * @param[in] void.
+ */
+void service_init(void)
+{
+    ble_uuid_t service_uuid;  
+    service_uuid.type = BLE_UUID_TYPE_BLE;  
+    service_uuid.uuid = 0xFFF1;  
+  
+    // 添加服务  
+    sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,&service_uuid,&Sentry.service_handle);  
+  
+    ble_gatts_char_md_t char_md;  
+    ble_gatts_attr_t attr_char_value;  
+    ble_gatts_attr_md_t cccd_md;  
+    ble_gatts_attr_md_t attr_md;  
+  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);  
+  
+    cccd_md.vloc           = BLE_GATTS_VLOC_STACK;  
+    char_md.p_cccd_md      = &cccd_md;  
+ 
+    char_md.char_props.notify = 1;
+    char_md.char_props.write    = 1;  
+    char_md.p_char_pf           = NULL;  
+    char_md.p_char_user_desc    = NULL;  
+    char_md.p_cccd_md      = NULL;  
+    char_md.p_user_desc_md = NULL;  
+  
+    attr_md.rd_auth = 0;  
+    attr_md.wr_auth = 0;  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);  
+    attr_md.vloc = BLE_GATTS_VLOC_STACK;  
+    attr_md.vlen = 1;  
+  
+    ble_uuid_t val_uuid;  
+    val_uuid.type   = BLE_UUID_TYPE_BLE;  
+    val_uuid.uuid  =0xFFF3;  
+    
+    attr_char_value.p_uuid     = &val_uuid;  
+    attr_char_value.p_attr_md       = &attr_md;  
+    attr_char_value.init_len   = sizeof(uint8_t);  
+    attr_char_value.init_offs  = 0;  
+    attr_char_value.max_len    = 20;  
+     // 添加特征值。  
+    sd_ble_gatts_characteristic_add(Sentry.service_handle, &char_md, &attr_char_value,&Sentry.handle); 
+    
+    
+    ble_gatts_char_md_t char_md2;  
+    ble_gatts_attr_t attr_char_value2;  
+    ble_gatts_attr_md_t cccd_md2;  
+    ble_gatts_attr_md_t attr_md2;  
+  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);  
+  
+    cccd_md2.vloc           = BLE_GATTS_VLOC_STACK;  
+    char_md2.p_cccd_md      = &cccd_md;  
+ 
+    char_md2.char_props.notify = 1;
+    char_md2.char_props.write    = 1;  
+    char_md2.p_char_pf           = NULL;  
+    char_md2.p_char_user_desc    = NULL;  
+    char_md2.p_cccd_md      = NULL;  
+    char_md2.p_user_desc_md = NULL;  
+  
+    attr_md2.rd_auth = 0;  
+    attr_md2.wr_auth = 0;  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md2.read_perm);  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md2.write_perm);  
+    attr_md2.vloc = BLE_GATTS_VLOC_STACK;  
+    attr_md2.vlen = 1;  
+  
+    ble_uuid_t val_uuid2;  
+    val_uuid2.type   = BLE_UUID_TYPE_BLE;  
+    val_uuid2.uuid  =0xFFF2;  
+    
+    attr_char_value2.p_uuid     = &val_uuid2;  
+    attr_char_value2.p_attr_md       = &attr_md2;  
+    attr_char_value2.init_len   = sizeof(uint8_t);  
+    attr_char_value2.init_offs  = 0;  
+    attr_char_value2.max_len    = 20;  
+     // 添加特征值。  
+    sd_ble_gatts_characteristic_add(Sentry.service_handle, &char_md2, &attr_char_value2,&Sentry.handle); 
+    
+  
+ /* ble_hrs_init_t sentry_init;
+  
+  memset(&sentry_init,0,sizeof(sentry_init));
+  
+ sentry_init.evt_handler = NULL;
+ 
+  // Here the sec level for the Heart Rate Service can be changed/increased.
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sentry_init.hrs_hrm_attr_md.cccd_write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sentry_init.hrs_hrm_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&sentry_init.hrs_hrm_attr_md.write_perm);
+
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sentry_init.hrs_bsl_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&sentry_init.hrs_bsl_attr_md.write_perm);
+
+     ble_hrs_init(&m_sentry, &sentry_init);*/
+   // APP_ERROR_CHECK(err_code);
+}
 
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -339,32 +453,7 @@ static void gap_params_init(void)
 
 /**@brief Function for initializing services that will be used by the application.
  */
-static void services_init(void)
-{
-    /* YOUR_JOB: Add code to initialize the services used by the application.
-       uint32_t                           err_code;
-       ble_xxs_init_t                     xxs_init;
-       ble_yys_init_t                     yys_init;
 
-       // Initialize XXX Service.
-       memset(&xxs_init, 0, sizeof(xxs_init));
-
-       xxs_init.evt_handler                = NULL;
-       xxs_init.is_xxx_notify_supported    = true;
-       xxs_init.ble_xx_initial_value.level = 100;
-
-       err_code = ble_bas_init(&m_xxs, &xxs_init);
-       APP_ERROR_CHECK(err_code);
-
-       // Initialize YYY Service.
-       memset(&yys_init, 0, sizeof(yys_init));
-       yys_init.evt_handler                  = on_yys_evt;
-       yys_init.ble_yy_initial_value.counter = 0;
-
-       err_code = ble_yy_service_init(&yys_init, &yy_init);
-       APP_ERROR_CHECK(err_code);
-     */
-}
 
 
 /**@brief Function for handling the Connection Parameters Module.
@@ -816,7 +905,8 @@ int main(void)
     APP_ERROR_CHECK(err_code);
 
     timers_init();
-    buttons_leds_init(&erase_bonds);
+  // buttons_leds_init(&erase_bonds);
+    erase_bonds = 0;
     ble_stack_init();
     peer_manager_init(erase_bonds);
     if (erase_bonds == true)
@@ -825,18 +915,43 @@ int main(void)
     }
     gap_params_init();
     advertising_init();
-    services_init();
-    conn_params_init();
+       service_init();
 
+    conn_params_init();
     // Start execution.
     NRF_LOG_INFO("Template started\r\n");
     application_timers_start();
     err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(err_code);
-
+ //   nrf_gpio_cfg_output(21);
+ //   LEDS_OFF(1<<21);
+    
+    
+  
+          
+          
     // Enter main loop.
     for (;;)
     {
+
+     
+     /* ble_gatts_hvx_params_t hvx_params;
+
+       
+uint16_t len = 1;
+uint8_t data = 0x08;
+        memset(&hvx_params, 0, sizeof(hvx_params));
+
+        hvx_params.handle = Sentry.handle.value_handle;
+        hvx_params.type   = BLE_GATT_HVX_NOTIFICATION;
+        hvx_params.offset = 0;
+        hvx_params.p_len  = &len;
+        hvx_params.p_data = &data;
+
+        sd_ble_gatts_hvx(Sentry.conn_handle, &hvx_params);
+        
+        */
+        
         if (NRF_LOG_PROCESS() == false)
         {
             power_manage();

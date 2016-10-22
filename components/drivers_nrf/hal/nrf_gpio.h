@@ -474,7 +474,7 @@ __STATIC_INLINE void nrf_gpio_cfg_output(uint32_t pin_number)
             NRF_GPIO_PIN_INPUT_DISCONNECT,
             NRF_GPIO_PIN_NOPULL,
             NRF_GPIO_PIN_S0S1,
-            NRF_GPIO_PIN_NOSENSE);
+            GPIO_PIN_CNF_SENSE_Disabled);
 }
 
 __STATIC_INLINE void nrf_gpio_cfg_input(uint32_t pin_number, nrf_gpio_pin_pull_t pull_config)
@@ -484,7 +484,7 @@ __STATIC_INLINE void nrf_gpio_cfg_input(uint32_t pin_number, nrf_gpio_pin_pull_t
             NRF_GPIO_PIN_DIR_INPUT,
             NRF_GPIO_PIN_INPUT_CONNECT,
             pull_config,
-            NRF_GPIO_PIN_S0S1,
+            GPIO_PIN_CNF_DRIVE_H0H1,
             NRF_GPIO_PIN_NOSENSE);
 }
 

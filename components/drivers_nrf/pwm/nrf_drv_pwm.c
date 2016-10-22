@@ -13,7 +13,7 @@
 #include "sdk_config.h"
 #if PWM_ENABLED
 #define ENABLED_PWM_COUNT (PWM0_ENABLED+PWM1_ENABLED+PWM2_ENABLED)
-#if ENABLED_PWM_COUNT
+#if ENABLED_PWM_COUNT   
 #include <string.h>
 #include "nrf_drv_pwm.h"
 #include "nrf_drv_common.h"

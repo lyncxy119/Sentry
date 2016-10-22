@@ -124,7 +124,7 @@
  
 
 #ifndef BLE_HRS_ENABLED
-#define BLE_HRS_ENABLED 0
+#define BLE_HRS_ENABLED 1
 #endif
 
 // <q> BLE_HTS_ENABLED  - ble_hts - Health Thermometer Service
@@ -802,7 +802,7 @@
 // <e> QDEC_ENABLED - nrf_drv_qdec - QDEC peripheral driver
 //==========================================================
 #ifndef QDEC_ENABLED
-#define QDEC_ENABLED 0
+#define QDEC_ENABLED 1
 #endif
 #if  QDEC_ENABLED
 // <o> QDEC_CONFIG_REPORTPER  - Report period
@@ -817,7 +817,7 @@
 // <7=> 280 Samples 
 
 #ifndef QDEC_CONFIG_REPORTPER
-#define QDEC_CONFIG_REPORTPER 0
+#define QDEC_CONFIG_REPORTPER 1
 #endif
 
 // <o> QDEC_CONFIG_SAMPLEPER  - Sample period
@@ -1962,7 +1962,7 @@
  
 
 #ifndef LOW_POWER_PWM_ENABLED
-#define LOW_POWER_PWM_ENABLED 0
+#define LOW_POWER_PWM_ENABLED 1
 #endif
 
 // <e> MEM_MANAGER_ENABLED - mem_manager - Dynamic memory allocator
