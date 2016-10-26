@@ -98,11 +98,12 @@ static void on_hrm_cccd_write(ble_hrs_t * p_hrs, ble_gatts_evt_write_t * p_evt_w
 static void on_write(BLEService * p_hrs, ble_evt_t * p_ble_evt)
 {
     ble_gatts_evt_write_t * p_evt_write = &p_ble_evt->evt.gatts_evt.params.write;
-   if(p_evt_write->uuid.uuid==0xFFF3)
+   if(p_evt_write->uuid.uuid==0xFFF1)
    // if(p_evt_write->data[0] == 0xAA)
     {
        nrf_gpio_cfg_output(21);
     LEDS_OFF(1<<21);
+   
     }
   if(p_evt_write->uuid.uuid==0xFFF2)
    // if(p_evt_write->data[0] == 0xAA)

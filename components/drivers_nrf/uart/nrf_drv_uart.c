@@ -841,6 +841,8 @@ __STATIC_INLINE void uarte_irq_handler(NRF_UARTE_Type * p_uarte, uart_control_bl
 }
 #endif
 
+
+
 void UART0_IRQHandler(void)
 {
     CODE_FOR_UARTE_INT

@@ -99,7 +99,7 @@ static void uart_loopback_test()
 int main(void)
 {
     LEDS_CONFIGURE(LEDS_MASK);
-    LEDS_OFF(LEDS_MASK);
+    LEDS_ON(LEDS_MASK);
     uint32_t err_code;
     const app_uart_comm_params_t comm_params =
       {
@@ -107,7 +107,7 @@ int main(void)
           TX_PIN_NUMBER,
           RTS_PIN_NUMBER,
           CTS_PIN_NUMBER,
-          APP_UART_FLOW_CONTROL_ENABLED,
+          APP_UART_FLOW_CONTROL_DISABLED,
           false,
           UART_BAUDRATE_BAUDRATE_Baud115200
       };
@@ -127,7 +127,7 @@ int main(void)
     while (true)
     {
         uint8_t cr;
-        while (app_uart_get(&cr) != NRF_SUCCESS);
+       // while (app_uart_get(&cr) != NRF_SUCCESS);
         while (app_uart_put(cr) != NRF_SUCCESS);
 
         if (cr == 'q' || cr == 'Q')

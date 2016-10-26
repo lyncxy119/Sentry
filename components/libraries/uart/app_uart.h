@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "app_util_platform.h"
-
+#include "app_uart.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -102,6 +102,41 @@ typedef struct
  */
 typedef void (* app_uart_event_handler_t) (app_uart_evt_t * p_app_uart_event);
 
+
+/**@brief Function for initializing the UART module. Use this initialization when several instances of the UART
+ *        module are needed.
+ *
+ *
+ * @note Normally single initialization should be done using the APP_UART_INIT() or
+ *       APP_UART_INIT_FIFO() macro depending on whether the FIFO should be used by the UART, as
+ *       that will allocate the buffers needed by the UART module (including aligning the buffer
+ *       correctly).
+
+ * @param[in]     p_comm_params     Pin and communication parameters.
+ * @param[in]     p_buffers         RX and TX buffers, NULL is FIFO is not used.
+ * @param[in]     error_handler     Function to be called in case of an error.
+ * @param[in]     irq_priority      Interrupt priority level.
+ *
+ * @retval      NRF_SUCCESS               If successful initialization.
+ * @retval      NRF_ERROR_INVALID_LENGTH  If a provided buffer is not a power of two.
+ * @retval      NRF_ERROR_NULL            If one of the provided buffers is a NULL pointer.
+ *
+ * The below errors are propagated by the UART module to the caller upon registration when Hardware
+ * Flow Control is enabled. When Hardware Flow Control is not used, these errors cannot occur.
+ * @retval      NRF_ERROR_INVALID_STATE   The GPIOTE module is not in a valid state when registering
+ *                                        the UART module as a user.
+ * @retval      NRF_ERROR_INVALID_PARAM   The UART module provides an invalid callback function when
+ *                                        registering the UART module as a user.
+ *                                        Or the value pointed to by *p_uart_uid is not a valid
+ *                                        GPIOTE number.
+ * @retval      NRF_ERROR_NO_MEM          GPIOTE module has reached the maximum number of users.
+ */
+uint32_t app_uart_init(const app_uart_comm_params_t * p_comm_params,
+                       app_uart_buffers_t *           p_buffers,
+                       app_uart_event_handler_t       error_handler,
+                       app_irq_priority_t             irq_priority);
+
+
 /**@brief Macro for safe initialization of the UART module in a single user instance when using
  *        a FIFO together with UART.
  *
@@ -149,38 +184,6 @@ typedef void (* app_uart_event_handler_t) (app_uart_evt_t * p_app_uart_event);
         ERR_CODE = app_uart_init(P_COMM_PARAMS, NULL, EVT_HANDLER, IRQ_PRIO);                      \
     } while (0)
 
-/**@brief Function for initializing the UART module. Use this initialization when several instances of the UART
- *        module are needed.
- *
- *
- * @note Normally single initialization should be done using the APP_UART_INIT() or
- *       APP_UART_INIT_FIFO() macro depending on whether the FIFO should be used by the UART, as
- *       that will allocate the buffers needed by the UART module (including aligning the buffer
- *       correctly).
-
- * @param[in]     p_comm_params     Pin and communication parameters.
- * @param[in]     p_buffers         RX and TX buffers, NULL is FIFO is not used.
- * @param[in]     error_handler     Function to be called in case of an error.
- * @param[in]     irq_priority      Interrupt priority level.
- *
- * @retval      NRF_SUCCESS               If successful initialization.
- * @retval      NRF_ERROR_INVALID_LENGTH  If a provided buffer is not a power of two.
- * @retval      NRF_ERROR_NULL            If one of the provided buffers is a NULL pointer.
- *
- * The below errors are propagated by the UART module to the caller upon registration when Hardware
- * Flow Control is enabled. When Hardware Flow Control is not used, these errors cannot occur.
- * @retval      NRF_ERROR_INVALID_STATE   The GPIOTE module is not in a valid state when registering
- *                                        the UART module as a user.
- * @retval      NRF_ERROR_INVALID_PARAM   The UART module provides an invalid callback function when
- *                                        registering the UART module as a user.
- *                                        Or the value pointed to by *p_uart_uid is not a valid
- *                                        GPIOTE number.
- * @retval      NRF_ERROR_NO_MEM          GPIOTE module has reached the maximum number of users.
- */
-uint32_t app_uart_init(const app_uart_comm_params_t * p_comm_params,
-                       app_uart_buffers_t *           p_buffers,
-                       app_uart_event_handler_t       error_handler,
-                       app_irq_priority_t             irq_priority);
 
 /**@brief Function for getting a byte from the UART.
  *

@@ -43,7 +43,7 @@
 #include "fstorage.h"
 #include "fds.h"
 #include "peer_manager.h"
-
+#include "app_uart.h"
 #include "bsp.h"
 #include "bsp_btn_ble.h"
 #include "sensorsim.h"
@@ -111,6 +111,57 @@ BLEService Sentry;
 static ble_uuid_t m_adv_uuids[] = {{BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}}; /**< Universally unique service identifiers. */
 
 static void advertising_start(void);
+
+
+void simple_uart_config(  uint8_t txd_pin_number,
+                          uint8_t rxd_pin_number)
+{
+  nrf_gpio_cfg_output(txd_pin_number);
+  nrf_gpio_cfg_input(rxd_pin_number, NRF_GPIO_PIN_NOPULL); 
+ 
+  NRF_UART0->PSELTXD = txd_pin_number;
+  NRF_UART0->PSELRXD = rxd_pin_number;
+ 
+ 
+ 
+  NRF_UART0->BAUDRATE         = (UART_BAUDRATE_BAUDRATE_Baud115200 << UART_BAUDRATE_BAUDRATE_Pos);
+  NRF_UART0->ENABLE           = (UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos);
+  NRF_UART0->TASKS_STARTTX    = 1;
+  NRF_UART0->TASKS_STARTRX    = 1;
+  NRF_UART0->EVENTS_RXDRDY    = 0;
+  
+  NRF_UART0->INTENSET=UART_INTENSET_RXDRDY_Enabled<<UART_INTENSET_RXDRDY_Pos;  
+  
+  NVIC_EnableIRQ(UART0_IRQn);
+  NVIC_SetPriority(UART0_IRQn,1); 
+}
+
+
+/* 向PC发送一个字符*/
+void simple_uart_put(uint8_t cr)
+{
+  NRF_UART0->TXD = (uint8_t)cr;
+ 
+  while (NRF_UART0->EVENTS_TXDRDY!=1)
+  {
+    // Wait for TXD data to be sent
+  }
+ 
+  NRF_UART0->EVENTS_TXDRDY=0;
+}
+ 
+/* 向PC发送字符串 */
+void simple_uart_putstring(const uint8_t *str)
+{
+  uint_fast8_t i = 0;
+  uint8_t ch = str[i++];
+  while (ch != '\0')
+  {
+    simple_uart_put(ch);
+    ch = str[i++];
+  }
+}
+
 /**@brief Function to initialize service.
  *
  * @param[in] void.
@@ -119,8 +170,22 @@ void service_init(void)
 {
     ble_uuid_t service_uuid;  
     service_uuid.type = BLE_UUID_TYPE_BLE;  
-    service_uuid.uuid = 0xFFF1;  
+    service_uuid.uuid = 0xFFFF;  
   
+    const ble_uuid128_t base_uuid128 =
+
+    {
+
+        {
+
+            0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78,0x23, 0x15,
+
+            0xDE, 0xEF, 0x12, 0x12, 0x00, 0x00,0x00, 0x00
+
+        }
+
+    };
+    sd_ble_uuid_vs_add(&base_uuid128, &(service_uuid.type));
     // 添加服务  
     sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,&service_uuid,&Sentry.service_handle);  
   
@@ -149,10 +214,11 @@ void service_init(void)
     attr_md.vloc = BLE_GATTS_VLOC_STACK;  
     attr_md.vlen = 1;  
   
-    ble_uuid_t val_uuid;  
+    //ble_uuid128_t val_uuid;
+   ble_uuid_t val_uuid;  
     val_uuid.type   = BLE_UUID_TYPE_BLE;  
-    val_uuid.uuid  =0xFFF3;  
-    
+    val_uuid.uuid  =0xFFF1;  
+     
     attr_char_value.p_uuid     = &val_uuid;  
     attr_char_value.p_attr_md       = &attr_md;  
     attr_char_value.init_len   = sizeof(uint8_t);  
@@ -200,7 +266,8 @@ void service_init(void)
      // 添加特征值。  
     sd_ble_gatts_characteristic_add(Sentry.service_handle, &char_md2, &attr_char_value2,&Sentry.handle); 
     
-  
+
+
  /* ble_hrs_init_t sentry_init;
   
   memset(&sentry_init,0,sizeof(sentry_init));
@@ -218,6 +285,78 @@ void service_init(void)
      ble_hrs_init(&m_sentry, &sentry_init);*/
    // APP_ERROR_CHECK(err_code);
 }
+
+
+#if 1
+    /**@brief   Function for handling app_uart events.
+ *
+ * @details This function will receive a single character from the app_uart module and append it to
+ *          a string. The string will be be sent over BLE when the last character received was a
+ *          'new line' i.e '\r\n' (hex 0x0D) or if the string has reached a length of
+ *          @ref NUS_MAX_DATA_LENGTH.
+ */
+/**@snippet [Handling the data received over UART] */
+void uart_event_handle(app_uart_evt_t * p_event)
+{
+    static uint8_t data_array[100];
+    static uint8_t index = 0;
+    uint32_t       err_code;
+
+    switch (p_event->evt_type)
+    {
+        case APP_UART_DATA_READY:
+            UNUSED_VARIABLE(app_uart_get(&data_array[index]));
+            index++;
+
+          
+            break;
+
+        case APP_UART_COMMUNICATION_ERROR:
+            APP_ERROR_HANDLER(p_event->data.error_communication);
+            break;
+
+        case APP_UART_FIFO_ERROR:
+            APP_ERROR_HANDLER(p_event->data.error_code);
+            break;
+
+        default:
+            break;
+    }
+}
+/**@snippet [Handling the data received over UART] */
+
+
+/**@brief  Function for initializing the UART module.
+ */
+/**@snippet [UART Initialization] */
+ void uart_init(void)
+{
+    uint32_t                     err_code;
+    const app_uart_comm_params_t comm_params =
+    {
+        RX_PIN_NUMBER,
+        TX_PIN_NUMBER,
+        RTS_PIN_NUMBER,
+        CTS_PIN_NUMBER,
+        APP_UART_FLOW_CONTROL_DISABLED,
+        false,
+        UART_BAUDRATE_BAUDRATE_Baud115200
+    };
+
+    APP_UART_FIFO_INIT( &comm_params,
+                       256,
+                       256,
+                       uart_event_handle,
+                       APP_IRQ_PRIORITY_LOW,
+                       err_code);
+    APP_ERROR_CHECK(err_code);
+  /* UART 通信引脚、波特率、使能等设定*/
+
+}
+/**@snippet [UART Initialization] */
+
+#endif
+
 
 /**@brief Callback function for asserts in the SoftDevice.
  *
@@ -901,9 +1040,9 @@ int main(void)
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
-
+    simple_uart_config(9,11);
+   // uart_init();
     timers_init();
-  // buttons_leds_init(&erase_bonds);
     erase_bonds = 0;
     ble_stack_init();
     peer_manager_init(erase_bonds);
@@ -913,8 +1052,7 @@ int main(void)
     }
     gap_params_init();
     advertising_init();
-       service_init();
-
+    service_init();
     conn_params_init();
     // Start execution.
     NRF_LOG_INFO("Template started\r\n");
@@ -922,20 +1060,14 @@ int main(void)
     err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(err_code);
  //   nrf_gpio_cfg_output(21);
- //   LEDS_OFF(1<<21);
-    
-    
-  
-          
-          
-    // Enter main loop.
+ //   LEDS_OFF(1<<21); 
+              // Enter main loop.
+   // simple_uart_put(0xaa);
     for (;;)
     {
-
-     
      /* ble_gatts_hvx_params_t hvx_params;
 
-       
+        simple_uart_put(0xaa);
 uint16_t len = 1;
 uint8_t data = 0x08;
         memset(&hvx_params, 0, sizeof(hvx_params));
@@ -949,7 +1081,6 @@ uint8_t data = 0x08;
         sd_ble_gatts_hvx(Sentry.conn_handle, &hvx_params);
         
         */
-        
         if (NRF_LOG_PROCESS() == false)
         {
             power_manage();
