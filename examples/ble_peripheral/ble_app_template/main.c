@@ -1040,8 +1040,8 @@ int main(void)
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
-    simple_uart_config(9,11);
-   // uart_init();
+   // simple_uart_config(9,11);
+    uart_init();
     timers_init();
     erase_bonds = 0;
     ble_stack_init();
