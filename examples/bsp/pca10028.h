@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 // LEDs definitions for PCA10028
-#define LEDS_NUMBER    4
+#define LEDS_NUMBER    1
 
 #define LED_START      21
 #define LED_1          21
@@ -52,7 +52,7 @@ extern "C" {
 #define BUTTON_STOP    20
 #define BUTTON_PULL    NRF_GPIO_PIN_PULLUP
 
-#define BUTTONS_LIST { BUTTON_1, BUTTON_2, BUTTON_3, BUTTON_4 }
+#define BUTTONS_LIST { BUTTON_1, BUTTON_2,BUTTON_3, BUTTON_4 }
 
 #define BSP_BUTTON_0   BUTTON_1
 #define BSP_BUTTON_1   BUTTON_2

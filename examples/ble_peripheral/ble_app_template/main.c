@@ -306,6 +306,7 @@ void uart_event_handle(app_uart_evt_t * p_event)
     {
         case APP_UART_DATA_READY:
             UNUSED_VARIABLE(app_uart_get(&data_array[index]));
+            app_uart_put(data_array[index]);
             index++;
 
           
@@ -955,6 +956,12 @@ static void bsp_event_handler(bsp_event_t event)
                 }
             }
             break; // BSP_EVENT_KEY_0
+    case BSP_EVENT_KEY_0:
+      app_uart_put(0xAA);
+      break;
+      case BSP_EVENT_KEY_1:
+      app_uart_put(0x55);
+      break;
 
         default:
             break;
@@ -997,7 +1004,7 @@ static void buttons_leds_init(bool * p_erase_bonds)
 {
     bsp_event_t startup_event;
 
-    uint32_t err_code = bsp_init(BSP_INIT_LED | BSP_INIT_BUTTONS,
+    uint32_t err_code = bsp_init( BSP_INIT_BUTTONS,
                                  APP_TIMER_TICKS(100, APP_TIMER_PRESCALER),
                                  bsp_event_handler);
 
@@ -1036,14 +1043,15 @@ int main(void)
 {
     uint32_t err_code;
     bool     erase_bonds;
-
+    
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
     APP_ERROR_CHECK(err_code);
    // simple_uart_config(9,11);
-    uart_init();
+    
     timers_init();
-    erase_bonds = 0;
+    buttons_leds_init(&erase_bonds); //按键函数初始化  
+   uart_init();
     ble_stack_init();
     peer_manager_init(erase_bonds);
     if (erase_bonds == true)

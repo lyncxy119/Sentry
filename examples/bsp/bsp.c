@@ -49,7 +49,7 @@
 #define RCV_ERROR_INTERVAL                     500
 
 #define ALERT_INTERVAL                         200
-
+volatile  uint32_t err_code_debug ;
 #if LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
 static bsp_indication_t m_stable_state        = BSP_INDICATE_IDLE;
 static uint32_t         m_app_ticks_per_100ms = 0;
@@ -537,6 +537,8 @@ uint32_t bsp_init(uint32_t type, uint32_t ticks_per_100ms, bsp_event_callback_t 
             err_code = app_button_init((app_button_cfg_t *)app_buttons,
                                        BUTTONS_NUMBER,
                                        ticks_per_100ms / 2);
+           
+             err_code_debug = err_code;
         }
 
         if (err_code == NRF_SUCCESS)
@@ -567,7 +569,7 @@ uint32_t bsp_init(uint32_t type, uint32_t ticks_per_100ms, bsp_event_callback_t 
 
 #if LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
 
-    if (type & BSP_INIT_LED)
+  /*  if (type & BSP_INIT_LED)
     {
         LEDS_OFF(LEDS_MASK);
         NRF_GPIO->DIRSET = LEDS_MASK;
@@ -584,7 +586,7 @@ uint32_t bsp_init(uint32_t type, uint32_t ticks_per_100ms, bsp_event_callback_t 
     {
         err_code =
             app_timer_create(&m_alert_timer_id, APP_TIMER_MODE_REPEATED, alert_timer_handler);
-    }
+    }*/
 #endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
 
     return err_code;
