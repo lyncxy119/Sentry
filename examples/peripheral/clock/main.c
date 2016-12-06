@@ -93,8 +93,10 @@ int main(void)
     APP_ERROR_CHECK(err_code);
     setup_example();
 
-    while (true)
+    while (1)
     {
+      nrf_gpio_cfg_output(21);
+      nrf_gpio_pin_set(21);
         nrf_delay_ms(1000);
         nrf_drv_clock_lfclk_request(NULL);
 

@@ -20,9 +20,9 @@ extern "C" {
 #define LEDS_NUMBER    1
 
 #define LED_START      21
-#define LED_1          21
-#define LED_2          22
-#define LED_3          23
+#define LED_1          13
+#define LED_2          14
+#define LED_3          15
 #define LED_4          24
 #define LED_STOP       24
 
@@ -46,8 +46,8 @@ extern "C" {
 
 #define BUTTON_START   17
 #define BUTTON_1       17
-#define BUTTON_2       18
-#define BUTTON_3       19
+#define BUTTON_2       8
+#define BUTTON_3       6
 #define BUTTON_4       20
 #define BUTTON_STOP    20
 #define BUTTON_PULL    NRF_GPIO_PIN_PULLUP
@@ -66,8 +66,8 @@ extern "C" {
 
 #define BUTTONS_MASK   0x001E0000
 
-#define RX_PIN_NUMBER  11
-#define TX_PIN_NUMBER  9
+#define RX_PIN_NUMBER  5
+#define TX_PIN_NUMBER  6
 #define CTS_PIN_NUMBER 10
 #define RTS_PIN_NUMBER 8
 #define HWFC           false

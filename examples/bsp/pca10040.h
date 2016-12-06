@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 // LEDs definitions for PCA10040
-#define LEDS_NUMBER    4
+#define LEDS_NUMBER    2
 
 #define LED_START      17
 #define LED_1          17

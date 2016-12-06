@@ -1,0 +1,328 @@
+###############################################################################
+#
+# IAR ELF Linker V7.30.3.8024/W32 for ARM                 13/Nov/2016  16:24:05
+# Copyright 2007-2014 IAR Systems AB.
+#
+#    Output file  =  
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\clock_pca10028.out
+#    Map file     =  
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\clock_pca10028.map
+#    Command line =  
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\app_error.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\app_error_weak.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\app_util_platform.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\iar_startup_nrf51.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\main.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\nrf_assert.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\nrf_drv_clock.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\nrf_drv_common.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\nrf_drv_gpiote.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\nrf_drv_ppi.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\nrf_drv_rtc.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\nrf_nvic.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\nrf_soc.o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\system_nrf51.o
+#        --redirect _Printf=_PrintfFull --redirect _Scanf=_ScanfFull -o
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\clock_pca10028.out
+#        --map
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build\clock_pca10028.map
+#        --config
+#        D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\clock_iar_nRF5x.icf
+#        --warnings_are_errors --entry __iar_program_start --inline --vfe
+#
+###############################################################################
+
+*******************************************************************************
+*** RUNTIME MODEL ATTRIBUTES
+***
+
+CppFlavor       = *
+__SystemLibrary = DLib
+
+
+*******************************************************************************
+*** PLACEMENT SUMMARY
+***
+
+"A1":  place at 0x00000000 { ro section .intvec };
+"P1":  place in [from 0x00000000 to 0x0003ffff] { ro };
+"P2":  place in [from 0x20000000 to 0x20007fff] { rw, block CSTACK, block HEAP };
+
+  Section            Kind        Address   Size  Object
+  -------            ----        -------   ----  ------
+"A1":                                      0xc0
+  .intvec            ro code  0x00000000   0xc0  iar_startup_nrf51.o [1]
+                            - 0x000000c0   0xc0
+
+"P1":                                     0xd60
+  .text              ro code  0x000000c0  0x384  nrf_drv_gpiote.o [1]
+  .text              ro code  0x00000444   0x54  nrf_drv_common.o [1]
+  .text              ro code  0x00000498  0x2c4  nrf_drv_clock.o [1]
+  .text              ro code  0x0000075c   0x30  app_util_platform.o [1]
+  .text              ro code  0x0000078c  0x1b0  nrf_drv_rtc.o [1]
+  .text              ro code  0x0000093c  0x154  main.o [1]
+  .text              ro code  0x00000a90   0x20  app_error.o [1]
+  .text              ro code  0x00000ab0  0x10c  nrf_drv_ppi.o [1]
+  .text              ro code  0x00000bbc   0x34  ABImemset.o [4]
+  .text              ro code  0x00000bf0   0x1c  app_error_weak.o [1]
+  .text              ro code  0x00000c0c   0xc4  system_nrf51.o [1]
+  .text              ro code  0x00000cd0   0x30  copy_init3.o [4]
+  .text              ro code  0x00000d00   0x2c  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000d2c   0x2a  zero_init3.o [4]
+  .text              ro code  0x00000d56    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000d58   0x28  data_init.o [4]
+  .iar.init_table    const    0x00000d80   0x24  - Linker created -
+  .text              ro code  0x00000da4   0x1a  cmain.o [4]
+  .text              ro code  0x00000dbe    0x8  exit.o [3]
+  .text              ro code  0x00000dc6    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000dc8    0xa  cexit.o [4]
+  .text              ro code  0x00000dd2    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000dd4    0xc  XXexit.o [4]
+  .text              ro code  0x00000de0    0xc  cstartup_M.o [4]
+  .text              ro code  0x00000dec    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000dee    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000df0    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000df2    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000df4    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000df6    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000df8    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000dfa    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000dfc    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000dfe    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e00    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e02    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e04    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e06    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e08    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e0a    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e0c    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e0e    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e10    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e12    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e14    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e16    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e18    0x2  iar_startup_nrf51.o [1]
+  .text              ro code  0x00000e1a    0x2  iar_startup_nrf51.o [1]
+  .rodata            const    0x00000e1c    0x0  zero_init3.o [4]
+  .rodata            const    0x00000e1c    0x0  copy_init3.o [4]
+  Initializer bytes  ro data  0x00000e1c    0x4  <for P2 s0>
+                            - 0x00000e20  0xd60
+
+"P2":                                     0x878
+  P2 s0                       0x20000000    0x4  <Init block>
+    .data            inited   0x20000000    0x4  system_nrf51.o [1]
+  .bss               zero     0x20000004   0x38  nrf_drv_gpiote.o [1]
+  .bss               zero     0x2000003c   0x24  nrf_drv_clock.o [1]
+  .bss               zero     0x20000060    0x8  nrf_drv_ppi.o [1]
+  .bss               zero     0x20000068    0x8  nrf_drv_rtc.o [1]
+  .bss               zero     0x20000070    0x4  app_util_platform.o [1]
+  CSTACK                      0x20000078  0x800  <Block>
+    CSTACK           uninit   0x20000078  0x800  <Block tail>
+                            - 0x20000878  0x878
+
+
+*******************************************************************************
+*** INIT TABLE
+***
+
+          Address     Size
+          -------     ----
+Zero (__iar_zero_init3)
+    1 destination range, total size 0x70:
+          0x20000004  0x70
+
+Copy (__iar_copy_init3)
+    1 source range, total size 0x4:
+          0x00000e1c   0x4
+    1 destination range, total size 0x4:
+          0x20000000   0x4
+
+
+
+*******************************************************************************
+*** MODULE SUMMARY
+***
+
+    Module               ro code  ro data  rw data
+    ------               -------  -------  -------
+D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build: [1]
+    app_error.o               32
+    app_error_weak.o          28
+    app_util_platform.o       48                 4
+    iar_startup_nrf51.o      290
+    main.o                   340
+    nrf_drv_clock.o          708                36
+    nrf_drv_common.o          84
+    nrf_drv_gpiote.o         900                56
+    nrf_drv_ppi.o            268                 8
+    nrf_drv_rtc.o            432                 8
+    system_nrf51.o           196        4        4
+    ----------------------------------------------
+    Total:                 3 326        4      116
+
+command line: [2]
+    ----------------------------------------------
+    Total:
+
+dl6M_tlf.a: [3]
+    exit.o                     8
+    ----------------------------------------------
+    Total:                     8
+
+rt6M_tl.a: [4]
+    ABImemset.o               52
+    XXexit.o                  12
+    cexit.o                   10
+    cmain.o                   26
+    copy_init3.o              48
+    cstartup_M.o              12
+    data_init.o               40
+    zero_init3.o              42
+    ----------------------------------------------
+    Total:                   242
+
+    Linker created                     36    2 048
+--------------------------------------------------
+    Grand Total:           3 576       40    2 164
+
+
+*******************************************************************************
+*** ENTRY LIST
+***
+
+Entry                      Address   Size  Type      Object
+-----                      -------   ----  ----      ------
+?main                   0x00000da5         Code  Gb  cmain.o [4]
+CSTACK$$Base            0x20000078          --   Gb  - Linker created -
+CSTACK$$Limit           0x20000878          --   Gb  - Linker created -
+GPIOTE_IRQHandler       0x000002fd  0x132  Code  Gb  nrf_drv_gpiote.o [1]
+POWER_CLOCK_IRQHandler  0x000006a9   0xa6  Code  Gb  nrf_drv_clock.o [1]
+RTC1_IRQHandler         0x00000925    0xe  Code  Gb  nrf_drv_rtc.o [1]
+Region$$Table$$Base     0x00000d80          --   Gb  - Linker created -
+Region$$Table$$Limit    0x00000da4          --   Gb  - Linker created -
+SystemCoreClock         0x20000000    0x4  Data  Gb  system_nrf51.o [1]
+SystemInit              0x00000c0d   0xa6  Code  Gb  system_nrf51.o [1]
+__ICFEDIT_region_RAM_end__ {Abs}
+                        0x20007fff          --   Gb  command line/config [2]
+__ICFEDIT_region_RAM_start__ {Abs}
+                        0x20000000          --   Gb  command line/config [2]
+__Vectors               0x00000000          --   Gb  iar_startup_nrf51.o [1]
+__Vectors_End           0x000000c0         Data  Gb  iar_startup_nrf51.o [1]
+__Vectors_Size {Abs}    0x000000c0          --   Gb  iar_startup_nrf51.o [1]
+__aeabi_memclr4         0x00000bed         Code  Gb  ABImemset.o [4]
+__aeabi_memclr8         0x00000bed         Code  Gb  ABImemset.o [4]
+__cmain                 0x00000da5         Code  Gb  cmain.o [4]
+__exit                  0x00000dd5         Code  Gb  XXexit.o [4]
+__iar_Memset4_word      0x00000bbd         Code  Gb  ABImemset.o [4]
+__iar_copy_init3        0x00000cd1   0x30  Code  Gb  copy_init3.o [4]
+__iar_data_init3        0x00000d59   0x28  Code  Gb  data_init.o [4]
+__iar_program_start     0x00000de1         Code  Gb  cstartup_M.o [4]
+__iar_zero_init3        0x00000d2d   0x2a  Code  Gb  zero_init3.o [4]
+__vector_table          0x00000000         Data  Gb  iar_startup_nrf51.o [1]
+_call_main              0x00000db1         Code  Gb  cmain.o [4]
+_exit                   0x00000dc9         Code  Gb  cexit.o [4]
+_main                   0x00000dbb         Code  Gb  cmain.o [4]
+app_error_fault_handler
+                        0x00000bf1   0x1c  Code  Wk  app_error_weak.o [1]
+app_error_handler_bare  0x00000a91   0x1c  Code  Gb  app_error.o [1]
+app_util_critical_region_enter
+                        0x0000077d    0x8  Code  Gb  app_util_platform.o [1]
+app_util_critical_region_exit
+                        0x00000785    0x8  Code  Gb  app_util_platform.o [1]
+app_util_disable_irq    0x0000075d    0xc  Code  Gb  app_util_platform.o [1]
+app_util_enable_irq     0x00000769    0xe  Code  Gb  app_util_platform.o [1]
+are_app_channels        0x00000ab1    0xe  Code  Lc  nrf_drv_ppi.o [1]
+channel_free            0x00000183   0x16  Code  Lc  nrf_drv_gpiote.o [1]
+channel_handler_get     0x00000133    0x8  Code  Lc  nrf_drv_gpiote.o [1]
+channel_port_alloc      0x0000013b   0x48  Code  Lc  nrf_drv_gpiote.o [1]
+channel_port_get        0x00000129    0xa  Code  Lc  nrf_drv_gpiote.o [1]
+clock_clk_started_notify
+                        0x00000675   0x22  Code  Lc  nrf_drv_clock.o [1]
+exit                    0x00000dbf    0x8  Code  Gb  exit.o [3]
+hfclk_stop              0x000004f1   0x18  Code  Lc  nrf_drv_clock.o [1]
+is_allocated_channel    0x00000acd    0xc  Code  Lc  nrf_drv_ppi.o [1]
+is_app_channel          0x00000abf    0xe  Code  Lc  nrf_drv_ppi.o [1]
+item_enqueue            0x00000537    0x8  Code  Lc  nrf_drv_clock.o [1]
+lfclk_stop              0x000004d5   0x1c  Code  Lc  nrf_drv_clock.o [1]
+m_cb                    0x20000004   0x38  Data  Lc  nrf_drv_gpiote.o [1]
+m_cb                    0x20000068    0x4  Data  Lc  nrf_drv_rtc.o [1]
+m_channels_allocated    0x20000064    0x4  Data  Lc  nrf_drv_ppi.o [1]
+m_clock_cb              0x2000003c   0x24  Data  Lc  nrf_drv_clock.o [1]
+m_drv_state             0x20000060    0x1  Data  Lc  nrf_drv_ppi.o [1]
+m_groups_allocated      0x20000061    0x1  Data  Lc  nrf_drv_ppi.o [1]
+m_handlers              0x2000006c    0x4  Data  Lc  nrf_drv_rtc.o [1]
+m_in_critical_region    0x20000070    0x4  Data  Lc  app_util_platform.o [1]
+main                    0x00000a29   0x3c  Code  Gb  main.o [1]
+nrf_clock_event_check   0x000004ab   0x10  Code  Lc  nrf_drv_clock.o [1]
+nrf_clock_event_clear   0x000004a1    0xa  Code  Lc  nrf_drv_clock.o [1]
+nrf_clock_hf_is_running
+                        0x000004bb   0x1a  Code  Lc  nrf_drv_clock.o [1]
+nrf_clock_task_trigger  0x00000499    0x8  Code  Lc  nrf_drv_clock.o [1]
+nrf_delay_ms            0x0000093d   0x2e  Code  Lc  main.o [1]
+nrf_drv_clock_calibration_abort
+                        0x00000627   0x48  Code  Gb  nrf_drv_clock.o [1]
+nrf_drv_clock_hfclk_release
+                        0x00000605   0x1a  Code  Gb  nrf_drv_clock.o [1]
+nrf_drv_clock_hfclk_request
+                        0x000005ad   0x50  Code  Gb  nrf_drv_clock.o [1]
+nrf_drv_clock_init      0x00000509   0x2e  Code  Gb  nrf_drv_clock.o [1]
+nrf_drv_clock_lfclk_release
+                        0x00000591   0x1c  Code  Gb  nrf_drv_clock.o [1]
+nrf_drv_clock_lfclk_request
+                        0x0000053f   0x52  Code  Gb  nrf_drv_clock.o [1]
+nrf_drv_common_irq_enable
+                        0x00000445   0x54  Code  Gb  nrf_drv_common.o [1]
+nrf_drv_gpiote_init     0x00000199   0x4e  Code  Gb  nrf_drv_gpiote.o [1]
+nrf_drv_gpiote_is_init  0x000001e7    0xc  Code  Gb  nrf_drv_gpiote.o [1]
+nrf_drv_gpiote_out_init
+                        0x000001f3   0x9e  Code  Gb  nrf_drv_gpiote.o [1]
+nrf_drv_gpiote_out_task_addr_get
+                        0x000002bd   0x10  Code  Gb  nrf_drv_gpiote.o [1]
+nrf_drv_gpiote_out_task_enable
+                        0x00000291   0x26  Code  Gb  nrf_drv_gpiote.o [1]
+nrf_drv_ppi_channel_alloc
+                        0x00000aed   0x52  Code  Gb  nrf_drv_ppi.o [1]
+nrf_drv_ppi_channel_assign
+                        0x00000b3f   0x3c  Code  Gb  nrf_drv_ppi.o [1]
+nrf_drv_ppi_channel_enable
+                        0x00000b7b   0x32  Code  Gb  nrf_drv_ppi.o [1]
+nrf_drv_ppi_init        0x00000ad9   0x14  Code  Gb  nrf_drv_ppi.o [1]
+nrf_drv_rtc_enable      0x0000082d   0x10  Code  Gb  nrf_drv_rtc.o [1]
+nrf_drv_rtc_init        0x000007cb   0x62  Code  Gb  nrf_drv_rtc.o [1]
+nrf_drv_rtc_int_handler
+                        0x0000086f   0xb6  Code  Lc  nrf_drv_rtc.o [1]
+nrf_drv_rtc_tick_enable
+                        0x00000849   0x26  Code  Gb  nrf_drv_rtc.o [1]
+nrf_gpio_cfg            0x000000d5   0x1c  Code  Lc  nrf_drv_gpiote.o [1]
+nrf_gpio_cfg_output     0x0000096b    0xa  Code  Lc  main.o [1]
+nrf_gpio_cfg_sense_set  0x000000f1   0x18  Code  Lc  nrf_drv_gpiote.o [1]
+nrf_gpio_pin_clear      0x00000113    0xa  Code  Lc  nrf_drv_gpiote.o [1]
+nrf_gpio_pin_set        0x00000109    0xa  Code  Lc  nrf_drv_gpiote.o [1]
+nrf_gpiote_event_clear  0x000000cd    0x8  Code  Lc  nrf_drv_gpiote.o [1]
+nrf_gpiote_event_is_set
+                        0x000000c1    0xc  Code  Lc  nrf_drv_gpiote.o [1]
+nrf_rtc_event_clear     0x000007af    0x6  Code  Lc  nrf_drv_rtc.o [1]
+nrf_rtc_event_disable   0x000007c3    0x8  Code  Lc  nrf_drv_rtc.o [1]
+nrf_rtc_event_enable    0x000007bb    0x8  Code  Lc  nrf_drv_rtc.o [1]
+nrf_rtc_event_pending   0x000007ab    0x4  Code  Lc  nrf_drv_rtc.o [1]
+nrf_rtc_int_disable     0x00000795    0x8  Code  Lc  nrf_drv_rtc.o [1]
+nrf_rtc_int_enable      0x0000078d    0x8  Code  Lc  nrf_drv_rtc.o [1]
+nrf_rtc_int_is_enabled  0x0000079d    0xe  Code  Lc  nrf_drv_rtc.o [1]
+nrf_rtc_task_trigger    0x000007b5    0x6  Code  Lc  nrf_drv_rtc.o [1]
+pin_in_use_clear        0x0000011d    0xc  Code  Lc  nrf_drv_gpiote.o [1]
+rtc                     0x00000a7c    0x8  Data  Gb  main.o [1]
+rtc_evt_handler         0x00000975    0x2  Code  Gb  main.o [1]
+setup_example           0x00000979   0xb0  Code  Gb  main.o [1]
+
+
+[1] = D:\BLE_Lock\Sentry\examples\peripheral\clock\pca10028\blank\iar\_build
+[2] = command line
+[3] = dl6M_tlf.a
+[4] = rt6M_tl.a
+
+  3 576 bytes of readonly  code memory
+     40 bytes of readonly  data memory
+  2 164 bytes of readwrite data memory
+
+Errors: none
+Warnings: none

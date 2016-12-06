@@ -26,7 +26,7 @@
 #include "nrf_delay.h"
 #include "bsp.h"
 
-static const uint8_t leds_list[LEDS_NUMBER] = LEDS_LIST;
+static const uint8_t leds_list[LEDS_NUMBER];// = LEDS_LIST;
 
 /**
  * @brief Function for application main entry.

@@ -52,7 +52,7 @@
 #include "ble_advdata.h"
 #include "ble_advertising.h"
 #include "ble_conn_state.h"
-
+#include "app_fifo.h"
 #define NRF_LOG_MODULE_NAME "APP"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
@@ -68,10 +68,10 @@
 #define CENTRAL_LINK_COUNT              0                                           /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
 #define PERIPHERAL_LINK_COUNT           1                                           /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
 
-#define DEVICE_NAME                     "Modoo0100008"                           /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "Modoo0100000"                           /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                       /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                         /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
-#define APP_ADV_TIMEOUT_IN_SECONDS      180                                         /**< The advertising timeout in units of seconds. */
+#define APP_ADV_TIMEOUT_IN_SECONDS      0xFFFFFFFF                                         /**< The advertising timeout in units of seconds. */
 
 #define APP_TIMER_PRESCALER             0                                           /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_OP_QUEUE_SIZE         4                                           /**< Size of timer operation queues. */
@@ -95,6 +95,12 @@
 #define SEC_PARAM_MAX_KEY_SIZE          16                                          /**< Maximum encryption key size. */
 
 #define DEAD_BEEF                       0xDEADBEEF                                  /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
+
+
+#define SEEK_HEAD 0
+#define SEEK_TYPE 1
+#define SEEK_LEN  2
+#define SEEK_DATA 3
 
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                            /**< Handle of the current connection. */
 static ble_hrs_t m_sentry;                                   /**< Structure used to identify the heart rate service. */ 
@@ -228,7 +234,45 @@ void service_init(void)
     sd_ble_gatts_characteristic_add(Sentry.service_handle, &char_md, &attr_char_value,&Sentry.handle); 
     
     
-    ble_gatts_char_md_t char_md2;  
+      ble_gatts_char_md_t char_md1;  
+    ble_gatts_attr_t attr_char_value1;  
+    ble_gatts_attr_md_t cccd_md1;  
+    ble_gatts_attr_md_t attr_md1;  
+  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md1.read_perm);  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md1.write_perm);  
+  
+    cccd_md1.vloc           = BLE_GATTS_VLOC_STACK;  
+    char_md1.p_cccd_md      = &cccd_md1;  
+ 
+    char_md1.char_props.notify = 1;
+    char_md1.char_props.write    = 1;  
+    char_md1.p_char_pf           = NULL;  
+    char_md1.p_char_user_desc    = NULL;  
+    char_md1.p_cccd_md      = NULL;  
+    char_md1.p_user_desc_md = NULL;  
+  
+    attr_md1.rd_auth = 0;  
+    attr_md1.wr_auth = 0;  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md1.read_perm);  
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md1.write_perm);  
+    attr_md1.vloc = BLE_GATTS_VLOC_STACK;  
+    attr_md1.vlen = 1;  
+  
+    //ble_uuid128_t val_uuid;
+   ble_uuid_t val_uuid1;  
+    val_uuid1.type   = BLE_UUID_TYPE_BLE;  
+    val_uuid1.uuid  =0xFFF3;  
+     
+    attr_char_value1.p_uuid     = &val_uuid1;  
+    attr_char_value1.p_attr_md       = &attr_md1;  
+    attr_char_value1.init_len   = sizeof(uint8_t);  
+    attr_char_value1.init_offs  = 0;  
+    attr_char_value1.max_len    = 20;  
+     // 添加特征值。  
+    sd_ble_gatts_characteristic_add(Sentry.service_handle, &char_md1, &attr_char_value1,&Sentry.handle); 
+   
+   /* ble_gatts_char_md_t char_md2;  
     ble_gatts_attr_t attr_char_value2;  
     ble_gatts_attr_md_t cccd_md2;  
     ble_gatts_attr_md_t attr_md2;  
@@ -265,7 +309,7 @@ void service_init(void)
     attr_char_value2.max_len    = 20;  
      // 添加特征值。  
     sd_ble_gatts_characteristic_add(Sentry.service_handle, &char_md2, &attr_char_value2,&Sentry.handle); 
-    
+    */
 
 
  /* ble_hrs_init_t sentry_init;
@@ -300,16 +344,57 @@ void uart_event_handle(app_uart_evt_t * p_event)
 {
     static uint8_t data_array[100];
     static uint8_t index = 0;
+    static uint8_t recv_index = 0;
+    static uint8_t recv_data = 0;
+    static uint8_t current_status = 0;
+    static uint8_t current_type = 0,current_len = 0;
+    uint8_t recv_complete = 0;
     uint32_t       err_code;
 
     switch (p_event->evt_type)
     {
         case APP_UART_DATA_READY:
-            UNUSED_VARIABLE(app_uart_get(&data_array[index]));
+        
+            UNUSED_VARIABLE(app_uart_get(&data_array[recv_index++]));
+           // app_uart_put(app_uart_get(&recv_data));
+           for(uint8_t i=0;i<recv_index;i++)
+           {
+            switch(current_status)
+            {
+            case SEEK_HEAD:
+              if(recv_data == 0xF0)
+              {
+                current_status = SEEK_TYPE;
+              }
+              break;
+            case SEEK_TYPE:
+              current_type = recv_data;
+              
+              break;
+            case SEEK_LEN:
+              current_len = recv_data;
+              break;
+            case SEEK_DATA:
+              if(index < current_len)
+              {
+              data_array[index++] = recv_data;
+              }
+              else
+              {
+                recv_complete = 1;
+                //index = 0;
+              }
+              break;
+            default:
+              break;
+            }
+          if(recv_complete == 1)
+          {
+            for(uint8_t i = 0;i< index;i++)
             app_uart_put(data_array[index]);
-            index++;
-
-          
+            index = 0;
+          }
+           }
             break;
 
         case APP_UART_COMMUNICATION_ERROR:
@@ -699,7 +784,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             break;
 
         case BLE_ADV_EVT_IDLE:
-            sleep_mode_enter();
+           sleep_mode_enter();
             break;
 
         default:
@@ -957,10 +1042,24 @@ static void bsp_event_handler(bsp_event_t event)
             }
             break; // BSP_EVENT_KEY_0
     case BSP_EVENT_KEY_0:
-      app_uart_put(0xAA);
+      app_uart_put(0x01);
+      NRF_GPIOTE->EVENTS_IN[0]=0;
+      NRF_GPIOTE->EVENTS_IN[1]=0;
       break;
       case BSP_EVENT_KEY_1:
+      app_uart_put(0x02);
+      NRF_GPIOTE->EVENTS_IN[0]=0;
+      NRF_GPIOTE->EVENTS_IN[1]=0;
+      break;
+       case BSP_EVENT_KEY_2:
+      app_uart_put(0x03);
+      NRF_GPIOTE->EVENTS_IN[0]=0;
+      NRF_GPIOTE->EVENTS_IN[1]=0;
+      break;
+      case BSP_EVENT_KEY_3:
       app_uart_put(0x55);
+      NRF_GPIOTE->EVENTS_IN[0]=0;
+      NRF_GPIOTE->EVENTS_IN[1]=0;
       break;
 
         default:
@@ -1005,7 +1104,7 @@ static void buttons_leds_init(bool * p_erase_bonds)
     bsp_event_t startup_event;
 
     uint32_t err_code = bsp_init( BSP_INIT_BUTTONS,
-                                 APP_TIMER_TICKS(100, APP_TIMER_PRESCALER),
+                                 APP_TIMER_TICKS(10, APP_TIMER_PRESCALER),
                                  bsp_event_handler);
 
     APP_ERROR_CHECK(err_code);
@@ -1043,15 +1142,16 @@ int main(void)
 {
     uint32_t err_code;
     bool     erase_bonds;
-    
+
     // Initialize.
     err_code = NRF_LOG_INIT(NULL);
-    APP_ERROR_CHECK(err_code);
+   APP_ERROR_CHECK(err_code);
    // simple_uart_config(9,11);
     
     timers_init();
-    buttons_leds_init(&erase_bonds); //按键函数初始化  
+ //  buttons_leds_init(&erase_bonds); //按键函数初始化  
    uart_init();
+#if 1
     ble_stack_init();
     peer_manager_init(erase_bonds);
     if (erase_bonds == true)
@@ -1067,10 +1167,13 @@ int main(void)
     application_timers_start();
     err_code = ble_advertising_start(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(err_code);
- //   nrf_gpio_cfg_output(21);
- //   LEDS_OFF(1<<21); 
-              // Enter main loop.
+#endif
+  
+   //LEDS_OFF(1<<21); 
+              // app_uart_put(0x03);
    // simple_uart_put(0xaa);
+  //  printf("111\n");
+#if 1
     for (;;)
     {
      /* ble_gatts_hvx_params_t hvx_params;
@@ -1094,6 +1197,7 @@ uint8_t data = 0x08;
             power_manage();
         }
     }
+#endif
 }
 
 
