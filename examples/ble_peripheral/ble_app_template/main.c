@@ -101,7 +101,7 @@
 #define SEEK_TYPE 1
 #define SEEK_LEN  2
 #define SEEK_DATA 3
-
+void app_tx_ble(uint8_t * data,uint16_t len);
 static uint16_t m_conn_handle = BLE_CONN_HANDLE_INVALID;                            /**< Handle of the current connection. */
 static ble_hrs_t m_sentry;                                   /**< Structure used to identify the heart rate service. */ 
 /*add my service 
@@ -355,10 +355,9 @@ void uart_event_handle(app_uart_evt_t * p_event)
     {
         case APP_UART_DATA_READY:
         
-            UNUSED_VARIABLE(app_uart_get(&data_array[recv_index++]));
-           // app_uart_put(app_uart_get(&recv_data));
-           for(uint8_t i=0;i<recv_index;i++)
-           {
+            UNUSED_VARIABLE(app_uart_get(&recv_data));
+        //    app_uart_put(data_array[0]);
+        //  app_uart_put(current_status);
             switch(current_status)
             {
             case SEEK_HEAD:
@@ -369,20 +368,23 @@ void uart_event_handle(app_uart_evt_t * p_event)
               break;
             case SEEK_TYPE:
               current_type = recv_data;
-              
+              current_status = SEEK_LEN;
               break;
             case SEEK_LEN:
               current_len = recv_data;
+              current_status = SEEK_DATA;
               break;
             case SEEK_DATA:
+        // app_uart_put(recv_data);
               if(index < current_len)
               {
               data_array[index++] = recv_data;
+              // app_uart_put(recv_data);
               }
               else
               {
                 recv_complete = 1;
-                //index = 0;
+                current_status = SEEK_HEAD;
               }
               break;
             default:
@@ -391,10 +393,11 @@ void uart_event_handle(app_uart_evt_t * p_event)
           if(recv_complete == 1)
           {
             for(uint8_t i = 0;i< index;i++)
-            app_uart_put(data_array[index]);
+            app_uart_put(data_array[i]);
             index = 0;
+            app_tx_ble(data_array,(uint16_t)current_len);
           }
-           }
+           
             break;
 
         case APP_UART_COMMUNICATION_ERROR:
@@ -1170,7 +1173,7 @@ int main(void)
 #endif
   
    //LEDS_OFF(1<<21); 
-              // app_uart_put(0x03);
+            //   app_uart_put(0x03);
    // simple_uart_put(0xaa);
   //  printf("111\n");
 #if 1
@@ -1200,6 +1203,23 @@ uint8_t data = 0x08;
 #endif
 }
 
+void app_tx_ble(uint8_t * data,uint16_t len)
+{
+   ble_gatts_hvx_params_t hvx_params;
+
+
+        memset(&hvx_params, 0, sizeof(hvx_params));
+
+        hvx_params.handle = Sentry.handle.value_handle;
+        hvx_params.type   = BLE_GATT_HVX_NOTIFICATION;
+        hvx_params.offset = 0;
+        hvx_params.p_len  = &len;
+        hvx_params.p_data = data;
+
+        sd_ble_gatts_hvx(Sentry.conn_handle, &hvx_params);
+        
+        
+}
 
 /**
  * @}
